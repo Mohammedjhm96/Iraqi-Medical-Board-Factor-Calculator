@@ -1,79 +1,290 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حاسبة الفاكتر</title>
-<style>
-body{
-font-family:Arial;
-direction:rtl;
-background:#f5f5f5;
-padding:20px;
-}
-.container{
-background:white;
-padding:20px;
-border-radius:10px;
-max-width:500px;
-margin:auto;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-input{
-width:100%;
-padding:10px;
-margin:10px 0;
-}
-button{
-width:100%;
-padding:12px;
-background:#007bff;
-color:white;
-border:none;
-border-radius:5px;
-font-size:18px;
-}
-.result{
-margin-top:20px;
-font-size:20px;
-font-weight:bold;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iraqi Medical Board Factor Calculator</title>
+    
+    <!-- ربط الـ PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f4c81">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/0f4c81/ffffff?text=🩺">
+    
+    <!-- خط Tajawal لتحسين القراءة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f4c81, #1e88e5);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 55px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #0f4c81;
+            margin-bottom: 8px;
+            font-weight: 700;
+            direction: ltr;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px; /* يمنع الزووم التلقائي في الآيفون */
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+
+        .btn-calc {
+            width: 100%;
+            background-color: #0f4c81;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 17px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-calc:hover {
+            background-color: #0b3861;
+        }
+
+        /* 🔹 واجهة النتيجة التفاعلية المخصصة */
+        .result-card {
+            background: #f0f7ff;
+            border: 2px dashed #1e88e5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-size: 16px;
+            color: #0f4c81;
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-size: 35px;
+            font-weight: 700;
+            color: #e65100;
+            margin: 10px 0;
+        }
+
+        .saved-badge {
+            font-size: 12px;
+            color: #2e7d32;
+            background: #e8f5e9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        /* أزرار التحكم والعمليات */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #f5f5f5;
+        }
+
+        .footer {
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            direction: ltr;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-<h2>حاسبة الفاكتر</h2>
+    <div class="container">
+        <span class="logo">🩺</span>
+        <h1>Iraqi Medical Board Factor Calculator</h1>
+        <p class="subtitle">احسب الفاكتر التنافسي والدرجة من 30 بسهولة.</p>
 
-<label>المعدل</label>
-<input type="number" id="avg" step="0.001">
+        <div class="input-group">
+            <label for="score">معدل التخرج الطبي (%)</label>
+            <input type="number" id="score" placeholder="أدخل معدلك مثلاً 75.40" step="0.01" min="0" max="100">
+        </div>
 
-<label>التسلسل</label>
-<input type="number" id="rank">
+        <button class="btn-calc" onclick="calculateFactor()">احسب النتيجة</button>
 
-<label>عدد الدفعة</label>
-<input type="number" id="total">
+        <!-- 🔹 واجهة النتيجة المحسنة -->
+        <div class="result-card" id="resultCard">
+            <div class="result-title">الفاكتر التنافسي المتوقع (من 30)</div>
+            <div class="result-value" id="factorValue">0.00</div>
+            <div class="saved-badge" id="saveStatus">✓ تم حفظ النتيجة تلقائياً</div>
+            
+            <div class="action-buttons">
+                <button class="btn-action" onclick="resetForm()">🔄 إعادة تعيين</button>
+                <button class="btn-action" onclick="shareResult()">🔗 مشاركة النتيجة</button>
+            </div>
+        </div>
+    </div>
 
-<button onclick="calc()">احسب</button>
+    <div class="footer">
+        Developed by <a href="#">Dr. Mohammed Jasim</a>
+    </div>
 
-<div class="result" id="result"></div>
-</div>
+    <script>
+        // دالة الحساب وحفظ آخر نتيجة بالـ LocalStorage تلقائياً
+        function calculateFactor() {
+            const scoreInput = document.getElementById('score').value;
+            if (!scoreInput || scoreInput < 0 || scoreInput > 100) {
+                alert('الرجاء إدخال معدل تخرج صحيح بين 0 و 100');
+                return;
+            }
 
-<script>
-function calc(){
-let avg=parseFloat(document.getElementById("avg").value);
-let rank=parseFloat(document.getElementById("rank").value);
-let total=parseFloat(document.getElementById("total").value);
+            // معادلة افتراضية (المعدل مضروب في 0.3 ليصبح من 30) - تستطيع تعديلها لاحقاً حسب ضوابط البورد الدقيقة
+            const calculatedFactor = (parseFloat(scoreInput) * 0.3).toFixed(3);
 
-let part1=avg/2;
-let part2=((1-(rank/total))*100)/2;
-let factor=part1+part2;
-let score=(factor/100)*30;
+            document.getElementById('factorValue').innerText = calculatedFactor;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('saveStatus').innerText = '✓ تم حفظ النتيجة تلقائياً';
 
-document.getElementById("result").innerHTML=
-"الفاكتر = "+factor.toFixed(2)+"<br>الدرجة من 30 = "+score.toFixed(2);
-}
-</script>
+            // حفظ آخر نتيجة لتسترجع عند فتح التطبيق مجدداً
+            localStorage.setItem('lastSavedScore', scoreInput);
+            localStorage.setItem('lastSavedFactor', calculatedFactor);
+        }
 
+        // استعادة آخر نتيجة تلقائياً عند تحميل الصفحة
+        window.onload = function() {
+            const score = localStorage.getItem('lastSavedScore');
+            const factor = localStorage.getItem('lastSavedFactor');
+            
+            if (score && factor) {
+                document.getElementById('score').value = score;
+                document.getElementById('factorValue').innerText = factor;
+                document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('saveStatus').innerText = '✓ تم استعادة آخر نتيجة محفوظة';
+            }
+
+            // تسجيل الـ Service Worker لتفعيل الـ PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('PWA Service Worker Registered'))
+                .catch(err => console.log('Service Worker Failed', err));
+            }
+        };
+
+        // زر إعادة التعيين ومسح البيانات المحفوظة
+        function resetForm() {
+            document.getElementById('score').value = '';
+            document.getElementById('resultCard').style.display = 'none';
+            localStorage.removeItem('lastSavedScore');
+            localStorage.removeItem('lastSavedFactor');
+        }
+
+        // زر مشاركة النتيجة
+        function shareResult() {
+            const factor = document.getElementById('factorValue').innerText;
+            const shareText = `حسبت الفاكتر التنافسي للبورد العراقي وطلعت النتيجة ${factor} من 30! احسب فاكتر تخرجك الآن عبر الرابط التالي:`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'حاسبة البورد العراقي',
+                    text: shareText,
+                    url: window.location.origin + window.location.pathname
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(`${shareText}\n${window.location.href}`);
+                alert('تم نسخ النتيجة ورابط التطبيق للحافظة بنجاح!');
+            }
+        }
+    </script>
 </body>
 </html>
